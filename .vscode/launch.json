@@ -1,0 +1,63 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python Debugger: Python File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}"
+        },
+        {
+            "name": "State Manager: Save 'mask_noise'",
+            "type": "python",
+            "request": "launch",
+            "program": "state_manager.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--save", "mask_noise"
+            ]
+        },
+        {
+            "name": "State Manager: Load 'mask_noise'",
+            "type": "python",
+            "request": "launch",
+            "program": "state_manager.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--load", "mask_noise"
+            ]
+        },
+        {
+            "name": "State Manager: Write 'mask_noise'",
+            "type": "python",
+            "request": "launch",
+            "program": "state_manager.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--write", "mask_noise",
+                "joint1=30", "joint2=0", "joint3=0",
+                "joint4=0", "joint5=0", "joint6=0"
+            ]
+        },
+        {
+            "name": "State Manager: Write 'parked' (current position)",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/state_manager.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--write", "parked", "current"
+            ]
+        },
+        {
+            "name": "State Manager: Load 'parked'",
+            "type": "python",
+            "request": "launch",
+            "program": "state_manager.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--load", "parked"
+            ]
+        }
+    ]
+}
