@@ -1,4 +1,67 @@
 states:
+  ceiling:
+    joint1: -0.1447
+    joint2: 8.6386
+    joint3: -7.3696
+    joint4: -77.7241
+    joint5: 0.6203
+    joint6: -0.3634
+  face desk:
+    joint1: -1.4894
+    joint2: 19.0158
+    joint3: -42.4042
+    joint4: 49.7251
+    joint5: 0.9783
+    joint6: -1.3163
+  face user:
+    joint1: -16.5353
+    joint2: 12.6292
+    joint3: -21.446
+    joint4: 24.1162
+    joint5: 0.6223
+    joint6: -1.1963
+  face user updated:
+    joint1: -9.6301
+    joint2: 12.8824
+    joint3: -21.4304
+    joint4: 24.152
+    joint5: 0.6342
+    joint6: -0.3624
+  face wall:
+    joint1: -70.6499
+    joint2: 4.6499
+    joint3: -47.4173
+    joint4: 58.8891
+    joint5: 17.4155
+    joint6: -21.0829
+  follow me-initial:
+    joint1: 38.3186
+    joint2: 2.3779
+    joint3: -1.8704
+    joint4: -4.6565
+    joint5: 0.6724
+    joint6: -1.123
+  home:
+    joint1: 0.3773
+    joint2: 2.313
+    joint3: -1.5577
+    joint4: -4.6413
+    joint5: 0.5588
+    joint6: 0.3915
+  mask speaker:
+    joint1: -42.1517
+    joint2: 14.275
+    joint3: -16.9801
+    joint4: 25.1147
+    joint5: 0.2694
+    joint6: 0.386
+  mask window:
+    joint1: 149.4783
+    joint2: 11.1983
+    joint3: -19.6503
+    joint4: 15.9227
+    joint5: 1.2095
+    joint6: -1.2572
   mask_noise:
     joint1: 60.0
     joint2: 91.0
@@ -13,3 +76,17 @@ states:
     joint4: -4.4042
     joint5: 0.2454
     joint6: -0.3827
+  sound to desk:
+    joint1: -21.1597
+    joint2: 18.4362
+    joint3: -40.2813
+    joint4: 50.1132
+    joint5: 1.3613
+    joint6: -2.6215
+  voice to plant:
+    joint1: -23.2166
+    joint2: 16.4592
+    joint3: -30.5271
+    joint4: 23.5966
+    joint5: 0.8208
+    joint6: -1.244

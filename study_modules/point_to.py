@@ -1,4 +1,3 @@
-
 import rospy
 import tf
 import numpy as np
@@ -17,7 +16,7 @@ def compute_look_at_orientation(from_pos, to_pos):
 
     # Pick a reasonable up direction that's not colinear with Z
     up = np.array([0, 0, 1]) if abs(z_axis[2]) < 0.95 else np.array([1, 0, 0])
-    
+
     x_axis = normalize(np.cross(up, z_axis))
     y_axis = np.cross(z_axis, x_axis)
 
@@ -91,9 +90,9 @@ if __name__ == "__main__":
     # Subscribes to the /pointing_goal topic (the one published by our interactive marker script).
     # Every time a new marker pose is published, marker_callback is called.
     # This is where we compute the orientation to point toward the marker and tell MoveIt to plan & execute.
-    
+
     # marker_callback is called every time a new PoseStamped is published to /pointing_goal
-    # PoseStamped part means the pose is tied to a specific time and reference frame 
+    # PoseStamped part means the pose is tied to a specific time and reference frame
     rospy.Subscriber("/pointing_goal", PoseStamped, marker_callback)
 
     rospy.loginfo("Ready to receive pointing goal")

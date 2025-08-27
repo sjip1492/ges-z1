@@ -2,12 +2,13 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import rospy
+import subprocess
 
 # Import your existing helpers
 from study_modules.joint_nudge import Z1Nudger
 from study_modules.state_manager import Z1StateManager
 
-# Serve built UI from ./ui/dist 
+# Serve built UI from ./ui/dist
 app = Flask(__name__, static_folder="ui/dist", static_url_path="")
 CORS(app)  # keep CORS; harmless even on same origin
 
@@ -19,10 +20,10 @@ states = Z1StateManager()
 # Map UI directions to a joint. Tweak to your liking:
 # - Commonly: left/right = base yaw (joint1), up/down = shoulder pitch (joint3)
 DIR_TO_JOINT = {
-    "left":  ("joint1", "-"),  # base yaw negative
-    "right": ("joint1", "+"),
-    "up":    ("joint3", "+"),  # shoulder pitch positive
-    "down":  ("joint3", "-"),
+    "left":  ("joint1", "+"),  # base yaw negative
+    "right": ("joint1", "-"),
+    "up":    ("joint3", "-"),  # shoulder pitch positive
+    "down":  ("joint3", "+"),
 }
 # --- Frontend routes (serve the built React app) ---
 
@@ -50,6 +51,7 @@ def api_root():
             "/api/nudge (POST)",
             "/api/state/list (GET)",
             "/api/state/load (POST)",
+            "/api/state/load-dynamic (POST)",
             "/api/state/write (POST)",
             "/api/state/delete (POST)",
         ],
@@ -91,6 +93,31 @@ def api_state_load():
     if not name:
         return jsonify(ok=False, error="Missing 'name'"), 400
     ok = states.load_and_move(name)
+    return (jsonify(ok=True) if ok else (jsonify(ok=False, error="execute failed"), 500))
+
+# /state/load-dynamic
+
+@app.route("/api/state/load-dynamic", methods=["POST"])
+def api_state_load_dynamic():
+    data = request.get_json(force=True)
+    name = data.get("name")
+    if not name:
+        return jsonify(ok=False, error="Missing 'name'"), 400
+    #ok = states.load_and_move(name)
+    if name == "zigzag":
+      ok = subprocess.run(
+        ["rosrun", "z1_sdk", "zig_zag.py"],
+        check=True,
+        capture_output=False,
+        text=True
+      )
+    elif name == "swing":
+      ok = subprocess.run(
+        ["rosrun", "z1_sdk", "up_down.py"],
+        check=True,
+        capture_output=False,
+        text=True
+      )
     return (jsonify(ok=True) if ok else (jsonify(ok=False, error="execute failed"), 500))
 
 @app.route("/api/state/write", methods=["POST"])

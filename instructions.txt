@@ -1,0 +1,8 @@
+Frontend
+- in ui directory run 'npm run build' to generate dist
+
+Backend
+- in . run app.py to start server
+
+Browser
+- go to 127.0.0.1:5001 to access web application

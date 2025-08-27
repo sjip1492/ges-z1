@@ -26,7 +26,10 @@ export default function App() {
     if (audioRef.current) audioRef.current.volume = volume;
   }, [volume]);
 
-  const currentTrack = useMemo(() => playlist[currentTrackIdx] || null, [playlist, currentTrackIdx]);
+  const currentTrack = useMemo(
+    () => playlist[currentTrackIdx] || null,
+    [playlist, currentTrackIdx]
+  );
 
   async function fetchStates() {
     setLoading(true);
@@ -73,13 +76,26 @@ export default function App() {
     }
   };
 
+  const loadStateDynamic = async (name) => {
+    setMessage("");
+    try {
+      await apiPost("/state/load-dynamic", { name });
+      setMessage(`Loaded state '${name}'`);
+    } catch (e) {
+      setMessage(`Load failed: ${e.message}`);
+    }
+  };
+
   const saveCurrentAs = async () => {
     if (!newStateName.trim()) {
       setMessage("Enter a name first");
       return;
     }
     try {
-      await apiPost("/state/write", { name: newStateName.trim(), source: "current" });
+      await apiPost("/state/write", {
+        name: newStateName.trim(),
+        source: "current",
+      });
       setMessage(`Saved current position as '${newStateName.trim()}'`);
       setNewStateName("");
       fetchStates();
@@ -102,7 +118,10 @@ export default function App() {
   const updateState = async () => {
     if (!editState) return;
     try {
-      await apiPost("/state/write", { name: editState.name, joints: editState.joints });
+      await apiPost("/state/write", {
+        name: editState.name,
+        joints: editState.joints,
+      });
       setMessage(`Updated '${editState.name}'`);
       setEditState(null);
       fetchStates();
@@ -113,7 +132,11 @@ export default function App() {
 
   // --- AUDIO CONTROLS ---
   const onAddAudioFiles = (files) => {
-    const items = Array.from(files).map((f) => ({ name: f.name, url: URL.createObjectURL(f), fileObj: f }));
+    const items = Array.from(files).map((f) => ({
+      name: f.name,
+      url: URL.createObjectURL(f),
+      fileObj: f,
+    }));
     setPlaylist((prev) => prev.concat(items));
     if (!currentTrack) setCurrentTrackIdx(0);
   };
@@ -135,7 +158,9 @@ export default function App() {
         </header>
 
         {message && (
-          <div className="p-3 rounded-xl bg-neutral-800 shadow-sm">{message}</div>
+          <div className="p-3 rounded-xl bg-neutral-800 shadow-sm">
+            {message}
+          </div>
         )}
 
         {/* Referents quick-actions */}
@@ -173,25 +198,38 @@ export default function App() {
                   className="flex-1 px-3 py-2 rounded-xl bg-neutral-900 border border-neutral-800"
                 />
                 <Button onClick={saveCurrentAs}>Save Current</Button>
-                <Button onClick={fetchStates} variant="ghost">Refresh</Button>
+                <Button onClick={fetchStates} variant="ghost">
+                  Refresh
+                </Button>
               </div>
               <div className="max-h-64 overflow-auto divide-y divide-neutral-800">
                 {loading ? (
                   <div className="p-2 text-sm opacity-70">Loading…</div>
                 ) : states.length === 0 ? (
-                  <div className="p-2 text-sm opacity-70">No states saved yet.</div>
+                  <div className="p-2 text-sm opacity-70">
+                    No states saved yet.
+                  </div>
                 ) : (
                   states.map((s) => (
                     <div key={s.name} className="py-2 flex items-center gap-2">
                       <div className="flex-1">
                         <div className="text-sm font-medium">{s.name}</div>
                         <div className="text-xs opacity-70">
-                          {Object.entries(s.joints || {}).map(([k, v]) => `${k}:${v}`).join("  ")}
+                          {Object.entries(s.joints || {})
+                            .map(([k, v]) => `${k}:${v}`)
+                            .join("  ")}
                         </div>
                       </div>
                       <Button onClick={() => loadState(s.name)}>Load</Button>
-                      <Button variant="ghost" onClick={() => setEditState(s)}>Edit</Button>
-                      <Button variant="ghost" onClick={() => deleteState(s.name)}>Delete</Button>
+                      <Button variant="ghost" onClick={() => setEditState(s)}>
+                        Edit
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        onClick={() => deleteState(s.name)}
+                      >
+                        Delete
+                      </Button>
                     </div>
                   ))
                 )}
@@ -202,16 +240,35 @@ export default function App() {
           <Card title="Audio Controls">
             <div className="space-y-3">
               <div className="text-sm">Playlist: {playlist.length} tracks</div>
-              <input type="file" accept="audio/*" multiple onChange={(e) => onAddAudioFiles(e.target.files)} />
-              <div className="text-sm">Now Playing: {currentTrack ? currentTrack.name : "None"}</div>
+              <input
+                type="file"
+                accept="audio/*"
+                multiple
+                onChange={(e) => onAddAudioFiles(e.target.files)}
+              />
+              <div className="text-sm">
+                Now Playing: {currentTrack ? currentTrack.name : "None"}
+              </div>
               <audio ref={audioRef} src={currentTrack?.url} onEnded={next} />
               <div className="flex gap-2">
                 <Button onClick={play}>Play</Button>
                 <Button onClick={pause}>Pause</Button>
                 <Button onClick={next}>Next</Button>
-                <Button variant="ghost" onClick={() => setVolume(Math.max(0, volume - 0.05))}>Vol -</Button>
-                <Button variant="ghost" onClick={() => setVolume(Math.min(1, volume + 0.05))}>Vol +</Button>
-                <Button variant="ghost" onClick={() => setVolume(0)}>Mute</Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => setVolume(Math.max(0, volume - 0.05))}
+                >
+                  Vol -
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => setVolume(Math.min(1, volume + 0.05))}
+                >
+                  Vol +
+                </Button>
+                <Button variant="ghost" onClick={() => setVolume(0)}>
+                  Mute
+                </Button>
               </div>
             </div>
           </Card>
@@ -221,11 +278,25 @@ export default function App() {
         <section>
           <Card title="Referents – Quick Access">
             <div className="grid md:grid-cols-2 gap-2">
-              <Button onClick={() => nudge("up", "small")}>Move up a little</Button>
-              <Button onClick={() => loadState("point_at_object")}>Point at this object</Button>
-              <Button onClick={() => loadState("point_over_there")}>Point over there</Button>
-              <Button onClick={() => loadState("point_toward_ceiling")}>Point toward ceiling</Button>
-              <Button onClick={() => loadState("point_toward_me")}>Point toward me</Button>
+              <Button onClick={() => nudge("up", "small")}>
+                Move up a little
+              </Button>
+              <Button onClick={() => loadState("point_at_object")}>
+                Point at this object
+              </Button>
+              <Button onClick={() => loadState("point_over_there")}>
+                Point over there
+              </Button>
+              <Button onClick={() => loadState("point_toward_ceiling")}>
+                Point toward ceiling
+              </Button>
+              <Button onClick={() => loadState("point_toward_me")}>
+                Point toward me
+              </Button>
+              <Button onClick={() => loadStateDynamic("zigzag")}>
+                Zig Zag
+              </Button>
+              <Button onClick={() => loadStateDynamic("swing")}>Swing</Button>
             </div>
           </Card>
         </section>
@@ -234,7 +305,9 @@ export default function App() {
         {editState && (
           <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4">
             <div className="bg-neutral-900 rounded-2xl p-4 w-full max-w-xl space-y-3 border border-neutral-800">
-              <div className="text-lg font-semibold">Edit state: {editState.name}</div>
+              <div className="text-lg font-semibold">
+                Edit state: {editState.name}
+              </div>
               <div className="grid grid-cols-2 gap-2">
                 {Object.entries(editState.joints || {}).map(([k, v]) => (
                   <label key={k} className="text-sm">
@@ -244,16 +317,23 @@ export default function App() {
                       type="number"
                       step="0.1"
                       value={v}
-                      onChange={(e) => setEditState((prev) => ({
-                        ...prev,
-                        joints: { ...prev.joints, [k]: parseFloat(e.target.value) }
-                      }))}
+                      onChange={(e) =>
+                        setEditState((prev) => ({
+                          ...prev,
+                          joints: {
+                            ...prev.joints,
+                            [k]: parseFloat(e.target.value),
+                          },
+                        }))
+                      }
                     />
                   </label>
                 ))}
               </div>
               <div className="flex gap-2 justify-end">
-                <Button variant="ghost" onClick={() => setEditState(null)}>Cancel</Button>
+                <Button variant="ghost" onClick={() => setEditState(null)}>
+                  Cancel
+                </Button>
                 <Button onClick={updateState}>Save</Button>
               </div>
             </div>
@@ -264,15 +344,27 @@ export default function App() {
         <section>
           <Card title="Supported Referents">
             <ul className="list-disc ml-6 space-y-1 text-sm opacity-90">
-              <li>Move arm small/medium/large amount in the left/right/up/down direction (nudge)</li>
+              <li>
+                Move arm small/medium/large amount in the left/right/up/down
+                direction (nudge)
+              </li>
               <li>Increase/decrease volume</li>
               <li>Play/pause sound</li>
               <li>Play the next track</li>
               <li>Mute</li>
-              <li>Point over there (saved state: <code>point_over_there</code>)</li>
-              <li>Point at this object (saved state: <code>point_at_object</code>)</li>
-              <li>Point toward ceiling (saved state: <code>point_toward_ceiling</code>)</li>
-              <li>Point toward me (saved state: <code>point_toward_me</code>)</li>
+              <li>
+                Point over there (saved state: <code>point_over_there</code>)
+              </li>
+              <li>
+                Point at this object (saved state: <code>point_at_object</code>)
+              </li>
+              <li>
+                Point toward ceiling (saved state:{" "}
+                <code>point_toward_ceiling</code>)
+              </li>
+              <li>
+                Point toward me (saved state: <code>point_toward_me</code>)
+              </li>
             </ul>
           </Card>
         </section>
@@ -292,9 +384,10 @@ function Card({ title, children }) {
 
 function Button({ children, onClick, variant }) {
   const base = "px-3 py-2 rounded-xl text-sm shadow-sm";
-  const styles = variant === "ghost"
-    ? "bg-transparent border border-neutral-800 hover:bg-neutral-800/40"
-    : "bg-neutral-100 text-neutral-900 hover:bg-white";
+  const styles =
+    variant === "ghost"
+      ? "bg-transparent border border-neutral-800 hover:bg-neutral-800/40"
+      : "bg-neutral-100 text-neutral-900 hover:bg-white";
   return (
     <button className={`${base} ${styles}`} onClick={onClick}>
       {children}

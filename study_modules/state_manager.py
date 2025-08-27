@@ -26,7 +26,8 @@ import moveit_commander
 
 MOVE_GROUP_NAME = 'manipulator'
 DEFAULT_JOINT_ORDER = ['joint1', 'joint2', 'joint3', 'joint4', 'joint5', 'joint6']
-DEFAULT_DB = os.path.expanduser('/home/tangentlab/z1_ws/src/z1_ros/z1_examples/examples/ges-z1/study_modules/z1_states/saved_states.yaml')
+DEFAULT_DB = os.path.expanduser('~/ges-z1/study_modules/z1_states/saved_states.yaml')
+# /ges-z1
 
 
 def rad2deg(r):
@@ -96,6 +97,7 @@ class Z1StateManager:
 
     def load(self, name):
         data = self._read_all()
+        print(data)
         if name not in data['states']:
             raise KeyError(f"State '{name}' not found in {self.db_path}")
         return data['states'][name]  # degrees
